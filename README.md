@@ -21,7 +21,7 @@ ChromaEngine bypasses standard high-level image processing libraries (like OpenC
 * **Color Space:** Smart Vibrance (targeting muted colors) and flat Saturation multipliers.
 
 ## Interface
-![Demo] ((https://github.com/rb937/ChromaEngine/blob/main/media/Demo.gif))
+![Interface Demo](https://github.com/rb937/ChromaEngine/raw/main/media/Demo.gif)
 
 *(Note: If the video does not play you can watch the demo at \media\demo.gif)
 
