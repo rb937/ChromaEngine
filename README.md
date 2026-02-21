@@ -31,10 +31,6 @@ I wanted a lightweight, custom-built tool that could mathematically process my g
 
 *(Note: If the video does not play you can watch the demo at \media\demo.gif)
 
-### Prerequisites
-* **Java Development Kit (JDK):** Version 8 or higher.
-* **Maven:** For dependency and build management.
-
 ## Project Structure
 
 ```text
