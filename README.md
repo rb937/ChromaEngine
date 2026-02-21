@@ -4,6 +4,12 @@ A high-performance, non-destructive image manipulation and color-grading engine 
 
 ChromaEngine bypasses standard high-level image processing libraries (like OpenCV or AWT's built-in filters) to perform **direct-memory bitwise processing** on ARGB channels. By manipulating raw 1D integer arrays in memory, the engine achieves instantaneous, real-time pixel processing suitable for both professional photo editing and 2D pixel-art asset preparation.
 
+## Why I Built This
+
+I originally developed ChromaEngine to solve a workflow bottleneck in my own 2D pixel art game development. Heavy, general-purpose software like Photoshop or GIMP felt too slow and bloated for repetitive tasks like recoloring character variants, stripping backgrounds, and adjusting the cinematic lighting of sprite sheets. 
+
+I wanted a lightweight, custom-built tool that could mathematically process my game assets exactly how my game engine needed them, while simultaneously serving as a deep dive into Java memory management, bitwise operations, and linear algebra.
+
 ## Core Architecture & Features
 
 * **Direct Memory Access:** Extracts and mutates raw `int[]` pixel arrays, reducing memory overhead and allowing O(n) processing speeds across millions of pixels.
