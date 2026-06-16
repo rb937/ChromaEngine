@@ -55,17 +55,14 @@ public class PrimaryController {
         filterModeDropdown.setPromptText("Select a filter");
         filterModeDropdown.getSelectionModel();
 
-        // 1. DYNAMIC LABELS: Listen to the dropdown menu and change the text
         filterModeDropdown.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             updateDynamicLabels(newVal);
-            applyFilter(); // Automatically apply the new filter when selected
+            applyFilter();
         });
 
-        // 2. ZOOM LOGIC: Bind the image size to the zoom slider
         imageView.scaleXProperty().bind(zoomSlider.valueProperty());
         imageView.scaleYProperty().bind(zoomSlider.valueProperty());
 
-        // PANNING LOGIC
         imageView.setOnMousePressed(event -> {
             dragStartX = event.getSceneX() - imageView.getTranslateX();
             dragStartY = event.getSceneY() - imageView.getTranslateY();
@@ -81,7 +78,6 @@ public class PrimaryController {
             imageView.setCursor(javafx.scene.Cursor.DEFAULT);
         });
 
-        // 3. FILTER LOGIC: Listen to the value sliders
         intensitySlider.valueProperty().addListener((obs, oldVal, newVal) -> applyFilter());
         brightnessSlider.valueProperty().addListener((obs, oldVal, newVal) -> applyFilter());
         intensitySlider.setValue(0);
@@ -97,9 +93,6 @@ public class PrimaryController {
         brightnessSlider.setManaged(false);
     }
 
-    /**
-     * Changes the UI text depending on what filter is selected in the dropdown.
-     */
     private void updateDynamicLabels(String selectedFilter) {
         intensitySlider.setValue(0);
         brightnessSlider.setValue(0);
@@ -161,79 +154,57 @@ public class PrimaryController {
 
     @FXML
     private void openImage() {
-        // 1. Create a standard File Chooser window
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open Image File");
 
-        // 2. Add filters so the user only selects valid image types (PNG, JPG, etc.)
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.bmp"));
 
-        // 3. Open the window and wait for the user to select a file
-        // We get the current window (Stage) from our imageView to anchor the dialog box
         Stage currentStage = (Stage) imageView.getScene().getWindow();
         File selectedFile = fileChooser.showOpenDialog(currentStage);
 
-        // 4. If the user picked a file (and didn't hit 'Cancel')
         if (selectedFile != null) {
-            // Pass the absolute path of whatever file they picked to our engine
             boolean success = imageManager.loadImage(selectedFile.getAbsolutePath());
 
             if (success) {
-                // Update the canvas
                 Image displayImage = SwingFXUtils.toFXImage(imageManager.getCurrentImage(), null);
                 imageView.setImage(displayImage);
-                // Force the image to fit the screen nicely, but let the user zoom in later
                 imageView.setFitWidth(800);
                 imageView.setFitHeight(600);
-                zoomSlider.setValue(1.0); // Reset zoom on new image
+                zoomSlider.setValue(1.0);
             }
         }
     }
 
-    /**
-     * The physical physical reset button. Wipes all math and resets sliders.
-     */
     @FXML
     private void resetImage() {
         if (imageManager == null || imageManager.getCurrentImage() == null)
             return;
 
-        // 1. Wipe memory back to the absolute original file
         imageManager.hardReset();
-
-        // 2. Reset the UI
         intensitySlider.setValue(0);
         brightnessSlider.setValue(0);
         zoomSlider.setValue(1.0);
-        filterModeDropdown.getSelectionModel().clearSelection();
 
-        // 3. Push the clean pixels to the screen
+        filterModeDropdown.getSelectionModel().clearSelection();
         Image displayImage = SwingFXUtils.toFXImage(imageManager.getCurrentImage(), null);
         imageView.setImage(displayImage);
     }
 
     @FXML
     private void applyFilter() {
-        // Safety check
         if (imageManager == null || imageManager.getCurrentImage() == null) {
             return;
         }
-
-        // 1. NON-DESTRUCTIVE EDITING: Instantly revert the memory back to the original,
-        // pristine image.
         imageManager.resetToOriginal();
 
-        // 2. Get the current UI values
         String selectedFilter = filterModeDropdown.getValue();
-        double intensity = intensitySlider.getValue(); // Goes from 0 to 100
+        double intensity = intensitySlider.getValue();
 
-        // 3. Route to the correct mathematical algorithm
         if ("Time of Day".equals(selectedFilter)) {
-            // Slider at 0 = Midnight, 50 = Original, 100 = High Noon
             TimeOfDayFilter timeFilter = new TimeOfDayFilter(intensity);
             timeFilter.apply(
-                    imageManager.getDisplayPixelData(), // Note: We pass the Display array now, not the original!
+                    imageManager.getDisplayPixelData(),
                     imageManager.getWidth(),
                     imageManager.getHeight());
             new BrightnessFilter(brightnessSlider.getValue()).apply(

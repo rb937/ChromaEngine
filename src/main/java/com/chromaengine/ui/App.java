@@ -14,7 +14,6 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        // Points to our FXML file in the resources folder
         scene = new Scene(loadFXML("/com/chromaengine/primary.fxml"), 800, 600);
         stage.setTitle("ChromaEngine - Developer Build");
         stage.setScene(scene);

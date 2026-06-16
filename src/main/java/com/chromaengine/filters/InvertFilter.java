@@ -9,7 +9,6 @@ public class InvertFilter implements PixelFilter {
             if (a == 0)
                 continue;
 
-            // Bitwise NOT or simple subtraction works: 255 - current
             int r = 255 - ((argb >> 16) & 0xFF);
             int g = 255 - ((argb >> 8) & 0xFF);
             int b = 255 - (argb & 0xFF);
