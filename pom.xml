@@ -13,24 +13,24 @@
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>13</version>
+            <version>23-ea+3</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>13</version>
+            <version>23-ea+3</version>
         </dependency>
     
-      <dependency>
+    <dependency>
         <groupId>org.glavo.hmcl</groupId>
         <artifactId>hmcl-dev</artifactId>
         <version>3.6.12.281</version>
-      </dependency>
+    </dependency>
     
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
-            <version>25-ea+21</version>
+            <version>23-ea+3</version>
         </dependency>
     
         <dependency>
@@ -52,14 +52,17 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.6</version>
+                <version>0.0.8</version>
                 <executions>
                     <execution>
                         <!-- Default configuration for running -->
                         <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.chromaengine.App</mainClass>
+                            <mainClass>com.chromaengine.ui.Launcher</mainClass>
+                            <options>
+                                <option>--enable-native-access=ALL-UNNAMED</option>
+                            </options>
                         </configuration>
                     </execution>
                 </executions>
