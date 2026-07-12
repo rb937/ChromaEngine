@@ -91,13 +91,9 @@ public class ImageManager {
 
     public void unloadImage() {
         if (currentImage == null) {
-            // This log is good, but often won't be seen because the controller
-            // usually checks for a null image before calling this.
-            // It's still good practice to keep it for robustness.
             logger.log("Warning: No image to unload.");
             return;
         }
-        // Existing unload logic is correct
         currentImage = null;
         displayPixelData = null;
         originalPixelData = null;
