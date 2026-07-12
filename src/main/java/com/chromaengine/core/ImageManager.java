@@ -15,6 +15,13 @@ public class ImageManager {
     private int width;
     private int height;
 
+    private Logger logger = (message) -> {
+    };
+
+    public void setLogger(Logger logger) {
+        this.logger = logger;
+    }
+
     public boolean loadImage(String filePath) {
         try {
             File file = new File(filePath);
@@ -34,46 +41,70 @@ public class ImageManager {
             System.out.println("Successfully loaded: " + width + "x" + height);
             System.out.println("Memory mapped " + originalPixelData.length + " pixels for high-speed processing.");
 
+            logger.log("Info: Successfully loaded: " + width + "x" + height);
+            logger.log("Memory mapped " + originalPixelData.length + " pixels for high-speed processing.");
+
             return true;
 
         } catch (IOException e) {
             System.err.println("Failed to load image from: " + filePath);
+            logger.log("Failed to load image from: " + filePath);
             e.printStackTrace();
             return false;
         }
     }
 
     public boolean saveImage(String filePath, String format) {
-        if (currentImage == null) {
-            System.err.println("ERROR: No image in memory to save.");
-            return false;
-        }
 
         try {
             File outputFile = new File(filePath);
             ImageIO.write(currentImage, format, outputFile);
 
             System.out.println("Successfully exported image to: " + filePath);
+            logger.log("Successfully exported image to: " + filePath);
             return true;
 
         } catch (IOException e) {
             System.err.println("Failed to save image to: " + filePath);
+            logger.log("Failed to save image to: " + filePath);
             e.printStackTrace();
             return false;
         }
     }
 
     public void resetToOriginal() {
-        if (originalPixelData != null && displayPixelData != null) {
-            System.arraycopy(originalPixelData, 0, displayPixelData, 0, originalPixelData.length);
+        if (currentImage == null) {
+            logger.log("Warning: Cannot reset, no image loaded.");
+            return;
         }
+        System.arraycopy(originalPixelData, 0, displayPixelData, 0, originalPixelData.length);
     }
 
     public void hardReset() {
-        if (trueOriginalPixelData != null) {
-            System.arraycopy(trueOriginalPixelData, 0, originalPixelData, 0, trueOriginalPixelData.length);
-            System.arraycopy(trueOriginalPixelData, 0, displayPixelData, 0, trueOriginalPixelData.length);
+        if (currentImage == null) {
+            logger.log("Warning: Cannot hard reset, no image loaded.");
+            return;
         }
+        System.arraycopy(trueOriginalPixelData, 0, originalPixelData, 0, trueOriginalPixelData.length);
+        System.arraycopy(trueOriginalPixelData, 0, displayPixelData, 0, trueOriginalPixelData.length);
+    }
+
+    public void unloadImage() {
+        if (currentImage == null) {
+            // This log is good, but often won't be seen because the controller
+            // usually checks for a null image before calling this.
+            // It's still good practice to keep it for robustness.
+            logger.log("Warning: No image to unload.");
+            return;
+        }
+        // Existing unload logic is correct
+        currentImage = null;
+        displayPixelData = null;
+        originalPixelData = null;
+        trueOriginalPixelData = null;
+        width = 0;
+        height = 0;
+        logger.log("Image unloaded and memory released.");
     }
 
     public int[] getDisplayPixelData() {
@@ -82,10 +113,6 @@ public class ImageManager {
 
     public BufferedImage getCurrentImage() {
         return currentImage;
-    }
-
-    public int[] getPixelData() {
-        return originalPixelData;
     }
 
     public int[] getOriginalPixelData() {

@@ -14,6 +14,7 @@ import javafx.scene.control.Label;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -26,17 +27,22 @@ public class PrimaryController {
 
     @FXML
     private ImageView imageView;
-
     private ImageManager imageManager;
 
     @FXML
     private ScrollPane scrollPane;
+
     @FXML
     private Label slider1Label;
+
     @FXML
     private Label slider2Label;
+
     @FXML
     private Slider zoomSlider;
+
+    @FXML
+    private TextArea logTextArea;
 
     private double dragStartX = 0;
     private double dragStartY = 0;
@@ -44,6 +50,9 @@ public class PrimaryController {
     @FXML
     public void initialize() {
         imageManager = new ImageManager();
+        imageManager.setLogger(this::log);
+
+        log("Application started.");
 
         filterModeDropdown.getItems().addAll(
                 "Time of Day",
@@ -107,6 +116,8 @@ public class PrimaryController {
         brightnessSlider.setVisible(false);
         brightnessSlider.setManaged(false);
 
+        log("Selected filter option: " + selectedFilter);
+
         if ("Time of Day".equals(selectedFilter)) {
             slider1Label.setText("Time (Night <-> Day)");
             slider2Label.setText("Brightness Offset");
@@ -168,6 +179,7 @@ public class PrimaryController {
 
             if (success) {
                 Image displayImage = SwingFXUtils.toFXImage(imageManager.getCurrentImage(), null);
+                log("Opened image: " + selectedFile.getAbsolutePath());
                 imageView.setImage(displayImage);
                 imageView.setFitWidth(800);
                 imageView.setFitHeight(600);
@@ -189,6 +201,7 @@ public class PrimaryController {
         filterModeDropdown.getSelectionModel().clearSelection();
         Image displayImage = SwingFXUtils.toFXImage(imageManager.getCurrentImage(), null);
         imageView.setImage(displayImage);
+        log("Resetted image.");
     }
 
     @FXML
@@ -232,60 +245,74 @@ public class PrimaryController {
                     imageManager.getHeight());
         }
 
-        // 4. Push the modified pixels to the screen
         Image displayImage = SwingFXUtils.toFXImage(imageManager.getCurrentImage(), null);
         imageView.setImage(displayImage);
+    }
+
+    @FXML
+    private void closeImage() {
+        if (imageManager == null || imageManager.getCurrentImage() == null) {
+            return;
+        }
+
+        imageManager.unloadImage();
+        imageView.setImage(null);
+
+        // Reset UI controls
+        intensitySlider.setValue(0);
+        brightnessSlider.setValue(0);
+        zoomSlider.setValue(1.0);
+        filterModeDropdown.getSelectionModel().clearSelection();
     }
 
     @FXML
     private void commitLayer() {
         if (imageManager == null || imageManager.getCurrentImage() == null)
             return;
-
-        // "Bake" the current display pixels into the original backup array
         System.arraycopy(
                 imageManager.getDisplayPixelData(), 0,
                 imageManager.getOriginalPixelData(), 0,
                 imageManager.getDisplayPixelData().length);
 
-        // Reset the UI sliders back to 0 so the user can stack the next effect
         intensitySlider.setValue(0);
         brightnessSlider.setValue(0);
         System.out.println("Layer committed! You can now stack another filter.");
+        log("Applied filter.");
+        log("Layer committed! You can now stack another filter.");
     }
 
     @FXML
     private void saveImage() {
         if (imageManager == null || imageManager.getCurrentImage() == null) {
             System.err.println("Nothing to save!");
+            log("Nothing to save!");
             return;
         }
 
-        // 1. Create the Save Dialog
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export Processed Image");
 
-        // 2. Set the default file name
         fileChooser.setInitialFileName("processed_image.png");
 
-        // 3. Force the user to save it as a PNG or JPG
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PNG Image", "*.png"),
                 new FileChooser.ExtensionFilter("JPEG Image", "*.jpg"));
 
-        // 4. Open the window and wait for the user to pick a location
         Stage currentStage = (Stage) imageView.getScene().getWindow();
         File fileToSave = fileChooser.showSaveDialog(currentStage);
 
         if (fileToSave != null) {
-            // Figure out if they chose PNG or JPG based on the file extension they typed
-            String format = "png"; // Default to PNG for pixel art (preserves transparency)
+            String format = "png";
             if (fileToSave.getName().toLowerCase().endsWith(".jpg")) {
                 format = "jpg";
             }
-
-            // Send it to the engine to be written to the disk
             imageManager.saveImage(fileToSave.getAbsolutePath(), format);
+            log("Saved image to: " + fileToSave.getAbsolutePath());
         }
+    }
+
+    public void log(String message) {
+        logTextArea.appendText(message + "\n");
+        logTextArea.setScrollTop(Double.MAX_VALUE);
     }
 }
