@@ -20,23 +20,10 @@
             <artifactId>javafx-fxml</artifactId>
             <version>23-ea+3</version>
         </dependency>
-    
-    <dependency>
-        <groupId>org.glavo.hmcl</groupId>
-        <artifactId>hmcl-dev</artifactId>
-        <version>3.6.12.281</version>
-    </dependency>
-    
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>23-ea+3</version>
-        </dependency>
-    
-        <dependency>
-            <groupId>org.clojure</groupId>
-            <artifactId>clojure</artifactId>
-            <version>1.10.1</version>
         </dependency>
     </dependencies>
     <build>
