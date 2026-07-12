@@ -1,4 +1,5 @@
 #  ChromaEngine
+![Logo](https://github.com/rb937/ChromaEngine/raw/main/media/logo.png)
 
 A high-performance, non-destructive image manipulation and color-grading engine built from scratch in Java.
 
