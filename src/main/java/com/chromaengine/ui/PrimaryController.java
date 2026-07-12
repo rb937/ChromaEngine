@@ -190,8 +190,10 @@ public class PrimaryController {
 
     @FXML
     private void resetImage() {
-        if (imageManager == null || imageManager.getCurrentImage() == null)
+        if (imageManager == null || imageManager.getCurrentImage() == null) {
+            log("Nothing to reset!");
             return;
+        }
 
         imageManager.hardReset();
         intensitySlider.setValue(0);
@@ -252,13 +254,13 @@ public class PrimaryController {
     @FXML
     private void closeImage() {
         if (imageManager == null || imageManager.getCurrentImage() == null) {
+            log("No Image is loaded");
             return;
         }
 
         imageManager.unloadImage();
         imageView.setImage(null);
 
-        // Reset UI controls
         intensitySlider.setValue(0);
         brightnessSlider.setValue(0);
         zoomSlider.setValue(1.0);
@@ -267,8 +269,10 @@ public class PrimaryController {
 
     @FXML
     private void commitLayer() {
-        if (imageManager == null || imageManager.getCurrentImage() == null)
+        if (imageManager == null || imageManager.getCurrentImage() == null) {
+            log("No Image is loaded");
             return;
+        }
         System.arraycopy(
                 imageManager.getDisplayPixelData(), 0,
                 imageManager.getOriginalPixelData(), 0,
