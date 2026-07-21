@@ -15,9 +15,9 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("/com/chromaengine/primary.fxml"), 800, 600);
+        scene = new Scene(loadFXML("/com/chromaengine/primary.fxml"), 1000, 800);
         stage.setTitle("ChromaEngine - Developer Build");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/chromaengine/icon.png")));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/com/chromaengine/image/icon.png")));
         stage.setScene(scene);
         stage.show();
     }
